@@ -14,7 +14,6 @@ export default function Home() {
   const TODO = "TODO";
   const IN_PROGRESS = "IN_PROGRESS";
   const DONE = "DONE";
-  const [value, setValue] = useState("");
   const [tasks, setTasks] = useState<Todo[]>([
     {
       id: 1,
@@ -99,22 +98,6 @@ export default function Home() {
   ]);
 
   const [dragTask, setDragTask] = useState<Todo | null>(null);
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && value.trim() !== "") {
-      e.preventDefault();
-      const obj = {
-        assignee: Math.random().toString(36).substring(2, 15) + Date.now(),
-        description: "Express your gratitude",
-        priority: "low",
-        dueDate: "2025-07-04",
-        title: value,
-        status: TODO,
-        id: Math.random().toString(36).substring(2, 15) + Date.now(),
-      };
-      setTasks((prev) => [...prev, obj]);
-      setValue("");
-    }
-  };
 
   const handleDragNDrop = (status: string) => {
     let copyTask = [...tasks];
@@ -146,18 +129,6 @@ export default function Home() {
     <div className="w-screen h-screen flex justify-center p-6 bg-[#191919]">
       <div className="w-full flex flex-col gap-4 items-center">
         <h1 className="text-center text-4xl">drap and drop</h1>
-        <input
-          type="text"
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          value={value}
-          className="bg-white text-black"
-        />
-        {/* <div>
-          <button>search</button>
-          <button>priority</button>
-          <button>date</button>
-        </div> */}
         <div className="flex gap-4 justify-between text-center">
           <div
             className="w-[20rem]"
