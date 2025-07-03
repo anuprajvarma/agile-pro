@@ -1,103 +1,247 @@
-import Image from "next/image";
+"use client";
+import React, { useState } from "react";
+
+interface Todo {
+  title: string;
+  status: string;
+  id: number | string;
+  assignee: string;
+  priority: string;
+  dueDate: string;
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const TODO = "TODO";
+  const IN_PROGRESS = "IN_PROGRESS";
+  const DONE = "DONE";
+  const [value, setValue] = useState("");
+  const [tasks, setTasks] = useState<Todo[]>([
+    {
+      id: 1,
+      title: "Do something nice for someone you care about",
+      assignee: "User 152",
+      status: "TODO",
+      priority: "medium",
+      dueDate: "2025-07-15",
+    },
+    {
+      id: 2,
+      title: "Memorize a poem",
+      assignee: "User 13",
+      status: "DONE",
+      priority: "low",
+      dueDate: "2025-07-06",
+    },
+    {
+      id: 3,
+      title: "Watch a classic movie",
+      assignee: "User 68",
+      status: "IN_PROGRESS",
+      priority: "low",
+      dueDate: "2025-07-09",
+    },
+    {
+      id: 4,
+      title: "Watch a documentary",
+      assignee: "User 84",
+      status: "TODO",
+      priority: "medium",
+      dueDate: "2025-07-12",
+    },
+    {
+      id: 5,
+      title: "Invest in cryptocurrency",
+      assignee: "User 163",
+      status: "TODO",
+      priority: "high",
+      dueDate: "2025-07-20",
+    },
+    {
+      id: 6,
+      title: "Contribute code or a donation to open-source software",
+      assignee: "User 69",
+      status: "TODO",
+      priority: "high",
+      dueDate: "2025-07-14",
+    },
+    {
+      id: 7,
+      title: "Solve a Rubik's cube",
+      assignee: "User 76",
+      status: "IN_PROGRESS",
+      priority: "medium",
+      dueDate: "2025-07-05",
+    },
+    {
+      id: 8,
+      title: "Bake pastries for yourself and neighbor",
+      assignee: "User 198",
+      status: "IN_PROGRESS",
+      priority: "medium",
+      dueDate: "2025-07-07",
+    },
+    {
+      id: 9,
+      title: "Go see a Broadway production",
+      assignee: "User 7",
+      status: "TODO",
+      priority: "high",
+      dueDate: "2025-07-16",
+    },
+    {
+      id: 10,
+      title: "Write a thank you letter to an influential person",
+      assignee: "User 9",
+      status: "DONE",
+      priority: "low",
+      dueDate: "2025-07-04",
+    },
+  ]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const [dragTask, setDragTask] = useState<Todo | null>(null);
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && value.trim() !== "") {
+      e.preventDefault();
+      const obj = {
+        assignee: Math.random().toString(36).substring(2, 15) + Date.now(),
+        description: "Express your gratitude",
+        priority: "low",
+        dueDate: "2025-07-04",
+        title: value,
+        status: TODO,
+        id: Math.random().toString(36).substring(2, 15) + Date.now(),
+      };
+      setTasks((prev) => [...prev, obj]);
+      setValue("");
+    }
+  };
+
+  const handleDragNDrop = (status: string) => {
+    let copyTask = [...tasks];
+    copyTask = copyTask.map((item) => {
+      if (dragTask && item.id === dragTask.id) {
+        if (dragTask.id === item.id) {
+          item.status = status;
+        }
+      }
+      return item;
+    });
+    setTasks(copyTask);
+    setDragTask(null);
+  };
+  const handleDrag = (e: React.DragEvent<HTMLElement>, task: Todo) => {
+    setDragTask(task);
+  };
+  const handleOnDrop = (e: React.DragEvent<HTMLElement>) => {
+    const status = e.currentTarget.getAttribute("data-status");
+    if (status === TODO) {
+      handleDragNDrop(TODO);
+    } else if (status === IN_PROGRESS) {
+      handleDragNDrop(IN_PROGRESS);
+    } else if (status === DONE) {
+      handleDragNDrop(DONE);
+    }
+  };
+  return (
+    <div className="w-screen h-screen flex justify-center p-6 bg-[#191919]">
+      <div className="w-full flex flex-col gap-4 items-center">
+        <h1 className="text-center text-4xl">drap and drop</h1>
+        <input
+          type="text"
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          value={value}
+          className="bg-white text-black"
+        />
+        {/* <div>
+          <button>search</button>
+          <button>priority</button>
+          <button>date</button>
+        </div> */}
+        <div className="flex gap-4 justify-between text-center">
+          <div
+            className="w-[20rem]"
+            data-status={TODO}
+            onDrop={handleOnDrop}
+            onDragOver={(e) => e.preventDefault()}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <h2 className="p-4 bg-amber-200/50 text-white rounded mb-2">
+              Todo
+            </h2>
+            {tasks.map(
+              (task) =>
+                task.status === TODO && (
+                  <div
+                    draggable
+                    onDrag={(e) => handleDrag(e, task)}
+                    key={task.id}
+                    className="flex justify-between gap-2 p-4 bg-amber-100/50 text-black rounded mb-2 cursor-pointer"
+                  >
+                    <p>{task.title}</p>
+                    <div className="flex gap-2">
+                      <button>edit</button>
+                      <button>delete</button>
+                    </div>
+                  </div>
+                )
+            )}
+          </div>
+          <div
+            className="w-[20rem]"
+            data-status={IN_PROGRESS}
+            onDrop={handleOnDrop}
+            onDragOver={(e) => e.preventDefault()}
           >
-            Read our docs
-          </a>
+            <h2 className="p-4 bg-blue-200/50 text-white rounded mb-2">
+              In Progress
+            </h2>
+            {tasks.map(
+              (task) =>
+                task.status === IN_PROGRESS && (
+                  <div
+                    draggable
+                    onDrag={(e) => handleDrag(e, task)}
+                    key={task.id}
+                    className="flex justify-between gap-2 p-4 bg-amber-100/50 text-black rounded mb-2 cursor-pointer"
+                  >
+                    <p>{task.title}</p>
+                    <div className="flex gap-2">
+                      <button>edit</button>
+                      <button>delete</button>
+                    </div>
+                  </div>
+                )
+            )}
+          </div>
+          <div
+            className="w-[20rem]"
+            data-status={DONE}
+            onDrop={handleOnDrop}
+            onDragOver={(e) => e.preventDefault()}
+          >
+            <h2 className="p-4 bg-green-200/50 text-white rounded mb-2">
+              Done
+            </h2>
+            {tasks.map(
+              (task) =>
+                task.status === DONE && (
+                  <div
+                    draggable
+                    onDrag={(e) => handleDrag(e, task)}
+                    key={task.id}
+                    className="flex justify-between gap-2 p-4 bg-amber-100/50 text-black rounded mb-2 cursor-pointer"
+                  >
+                    <p>{task.title}</p>
+                    <div className="flex gap-2">
+                      <button>edit</button>
+                      <button>delete</button>
+                    </div>
+                  </div>
+                )
+            )}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }
