@@ -2,6 +2,7 @@
 import { Dialog, DialogPanel } from "@headlessui/react";
 import React, { useState } from "react";
 import { FiPlus } from "react-icons/fi";
+import { RiArrowDropDownLine } from "react-icons/ri";
 
 interface Todo {
   title: string;
@@ -17,6 +18,8 @@ export default function Home() {
   const IN_PROGRESS = "IN_PROGRESS";
   const DONE = "DONE";
   const [searchTerm, setSearchTerm] = useState("");
+  const [isPriorityCheckOpen, setIsPriorityCheckOpen] = useState(false);
+  const [isSearchCheckOpen, setIsSearchCheckOpen] = useState(false);
   const [dueDateFilter, setDueDateFilter] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -61,7 +64,14 @@ export default function Home() {
       priority: "medium",
       dueDate: "2025-07-12",
     },
-
+    {
+      id: 5,
+      title: "Watch a gothic movie",
+      assignee: "User 85",
+      status: "TODO",
+      priority: "high",
+      dueDate: "2025-07-19",
+    },
     {
       id: 7,
       title: "Solve a Rubik's cube",
@@ -139,80 +149,119 @@ export default function Home() {
     e.preventDefault();
     console.log("Form data submitted:", formData);
     // Add the new task to the tasks array
-    setTasks((prev) => [
-      ...prev,
-      {
-        ...formData,
-        id: Math.floor(Math.random() * 1000), // Generate a new random ID
-      },
-    ]);
+    if (formData.title !== "" && formData.assignee !== "") {
+      setTasks((prev) => [
+        ...prev,
+        {
+          ...formData,
+          id: Math.floor(Math.random() * 1000), // Generate a new random ID
+        },
+      ]);
+    }
     setIsOpen(false);
   };
   return (
     <div className="w-full h-full flex justify-center p-6 bg-[#191919]">
-      <div className="w-full flex flex-col gap-4 items-center z-10">
+      <div className="w-full flex flex-col gap-4 items-center">
         <h1 className="text-center text-4xl">Agile Pro</h1>
-        <div className="py-4 flex gap-4 z-10">
-          <div className="flex flex-col gap-1">
-            <button className="px-4 w-[5rem] h-[1.6rem] text-center py-1 cursor-pointer rounded-xl border border-amber-200/50 text-xs hover:bg-amber-200/10 transition duration-300">
-              Search
+        <div className="py-4 flex gap-4">
+          <div className="flex flex-col gap-1 relative">
+            <button
+              onClick={() => {
+                setIsSearchCheckOpen(!isSearchCheckOpen);
+                setSearchTerm("");
+              }}
+              className={`flex items-center px-4 w-[6rem] h-[1.6rem] ${
+                isSearchCheckOpen ? "bg-amber-200/10" : ""
+              } text-center py-1 z-10 cursor-pointer rounded-xl border border-amber-200/50 text-xs hover:bg-amber-200/10 transition duration-300`}
+            >
+              <p>Search</p>
+              <RiArrowDropDownLine className="text-xl" />
             </button>
-            <div className="flex z-30">
-              <input
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                type="text"
-                placeholder="Search tasks..."
-                className="px-4 py-1 flex rounded-xl border border-amber-200/50 text-xs bg-transparent focus:outline-none focus:border-amber-200 transition duration-300"
-              />
-            </div>
+            {isSearchCheckOpen && (
+              <div className="flex absolute top-[2.2rem] left-0 z-50">
+                <input
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  type="text"
+                  placeholder="Search tasks..."
+                  className="px-4 py-2 flex rounded-xl border border-amber-200/50 bg-[#191919] text-xs focus:outline-none focus:border-amber-200 transition duration-300"
+                />
+              </div>
+            )}
           </div>
-          <div className="flex flex-col gap-1">
-            <button className="px-4 w-[5rem] h-[1.6rem] text-center py-1 z-10 flex cursor-pointer rounded-xl border border-amber-200/50 text-xs hover:bg-amber-200/10 transition duration-300">
-              priority
+          <div className="flex flex-col gap-1 relative">
+            <button
+              onClick={() => {
+                setIsPriorityCheckOpen(!isPriorityCheckOpen);
+                setPriorityFilter([]);
+              }}
+              className={`px-4 w-[6rem] items-center h-[1.6rem] text-center py-1 z-10 flex cursor-pointer rounded-xl border border-amber-200/50 text-xs hover:bg-amber-200/10 ${
+                isPriorityCheckOpen ? "bg-amber-200/10" : ""
+              } transition duration-300`}
+            >
+              <p>priority</p>
+              <RiArrowDropDownLine className="text-xl" />
             </button>
 
-            {
-              <>
-                <div className="flex gap-2 items-center justify-center z-30">
+            {isPriorityCheckOpen && (
+              <div className="absolute top-[2.2rem] left-0 z-50 bg-[#191919] shadow-md rounded-md p-2 flex flex-col gap-1 border border-amber-200/50">
+                <div className="flex gap-2 items-center">
                   <input
                     type="checkbox"
                     onClick={() => togglePriorityFilter("low")}
-                    // placeholder="Search tasks..."
-                    className="px-4 py-1 flex rounded-xl border border-amber-200/50 text-xs bg-transparent focus:outline-none focus:border-amber-200 transition duration-300"
+                    className="px-4 py-1 rounded-xl border border-amber-200/50 text-xs bg-transparent focus:outline-none focus:border-amber-200 transition duration-300"
                   />
                   <p>low</p>
                 </div>
-                <div className="flex gap-2 items-center justify-center z-30">
+                <div className="flex gap-2 items-center">
                   <input
                     type="checkbox"
                     onClick={() => togglePriorityFilter("medium")}
-                    // placeholder="Search tasks..."
-                    className="px-4 py-1 flex rounded-xl border border-amber-200/50 text-xs bg-transparent focus:outline-none focus:border-amber-200 transition duration-300"
+                    className="px-4 py-1 rounded-xl border border-amber-200/50 text-xs bg-transparent focus:outline-none focus:border-amber-200 transition duration-300"
                   />
                   <p>medium</p>
                 </div>
-                <div className="flex gap-2 items-center justify-center z-30">
+                <div className="flex gap-2 items-center">
                   <input
                     type="checkbox"
                     onClick={() => togglePriorityFilter("high")}
-                    // placeholder="Search tasks..."
-                    className="px-4 py-1 flex rounded-xl border border-amber-200/50 text-xs bg-transparent focus:outline-none focus:border-amber-200 transition duration-300"
+                    className="px-4 py-1 rounded-xl border border-amber-200/50 text-xs bg-transparent focus:outline-none focus:border-amber-200 transition duration-300"
                   />
                   <p>high</p>
                 </div>
-              </>
-            }
+              </div>
+            )}
           </div>
-          <input
+
+          {/* <input
             type="date"
             value={dueDateFilter}
             onChange={(e) => setDueDateFilter(e.target.value)}
-            className="px-2 py-1 h-[1.6rem] rounded-xl border border-amber-200/50 text-xs bg-transparent text-white focus:outline-none focus:border-amber-200 transition duration-300"
-          />
-          {/* <button className="px-4 w-[5rem] h-[1.6rem] text-center py-1 z-10 flex cursor-pointer rounded-xl border border-amber-200/50 text-xs hover:bg-amber-200/10 transition duration-300">
-            date
-          </button> */}
+            className="px-2 py-1 h-[1.6rem] cursor-pointer rounded-xl appearance-none border border-amber-200/50 text-xs bg-transparent text-white focus:outline-none focus:border-amber-200 transition duration-300"
+          /> */}
+          <div className="relative w-fit">
+            <input
+              type="date"
+              value={dueDateFilter}
+              onChange={(e) => setDueDateFilter(e.target.value)}
+              className="px-2 py-1 h-[1.6rem] cursor-pointer rounded-xl appearance-none border border-amber-200/50 text-xs bg-transparent text-white focus:outline-none focus:border-amber-200 transition duration-300"
+            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 7V3M16 7V3M4 11h16M4 19h16M4 15h16M4 7h16"
+              />
+            </svg>
+          </div>
         </div>
         <div className="flex gap-4 justify-between">
           <div
@@ -236,7 +285,7 @@ export default function Home() {
               <Dialog
                 open={isOpen}
                 onClose={() => setIsOpen(false)}
-                className="relative z-50"
+                className="relative"
               >
                 <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
                   <DialogPanel className="max-w-lg space-y-4 p-12 border border-amber-200/50 bg-[#191919] rounded">
