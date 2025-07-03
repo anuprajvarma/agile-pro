@@ -50,22 +50,7 @@ export default function Home() {
       priority: "medium",
       dueDate: "2025-07-12",
     },
-    {
-      id: 5,
-      title: "Invest in cryptocurrency",
-      assignee: "User 163",
-      status: "TODO",
-      priority: "high",
-      dueDate: "2025-07-20",
-    },
-    {
-      id: 6,
-      title: "Contribute code or a donation to open-source software",
-      assignee: "User 69",
-      status: "TODO",
-      priority: "high",
-      dueDate: "2025-07-14",
-    },
+
     {
       id: 7,
       title: "Solve a Rubik's cube",
@@ -84,14 +69,6 @@ export default function Home() {
     },
     {
       id: 9,
-      title: "Go see a Broadway production",
-      assignee: "User 7",
-      status: "TODO",
-      priority: "high",
-      dueDate: "2025-07-16",
-    },
-    {
-      id: 10,
       title: "Write a thank you letter to an influential person",
       assignee: "User 9",
       status: "DONE",
@@ -138,9 +115,9 @@ export default function Home() {
     }
   };
   return (
-    <div className="w-screen h-screen flex justify-center p-6 bg-[#191919]">
+    <div className="w-full h-full flex justify-center p-6 bg-[#191919]">
       <div className="w-full flex flex-col gap-4 items-center z-10">
-        <h1 className="text-center text-4xl">drap and drop</h1>
+        <h1 className="text-center text-4xl">Agile Pro</h1>
         <div className="py-4 flex gap-4 z-10">
           <div className="flex flex-col gap-1">
             <button className="px-4 w-[5rem] h-[1.6rem] text-center py-1 cursor-pointer rounded-xl border border-amber-200/50 text-xs hover:bg-amber-200/10 transition duration-300">
@@ -203,7 +180,7 @@ export default function Home() {
             date
           </button> */}
         </div>
-        <div className="flex gap-4 justify-between text-center">
+        <div className="flex gap-4 justify-between">
           <div
             className="w-[20rem]"
             data-status={TODO}
@@ -228,12 +205,14 @@ export default function Home() {
                   draggable
                   onDrag={(e) => handleDrag(e, task)}
                   key={task.id}
-                  className="flex justify-between gap-2 p-4 bg-amber-100/50 text-black rounded mb-2 cursor-pointer"
+                  className="flex flex-col text-lg justify-between gap-2 p-4 bg-amber-100/50 text-black rounded mb-2 cursor-pointer"
                 >
                   <p>{task.title}</p>
-                  <div className="flex gap-2">
-                    <button>edit</button>
-                    <button>delete</button>
+                  <p className="text-xs">{task.assignee}</p>
+                  <div>
+                    <span className="text-sm px-4 py-1 text-center rounded-full bg-amber-200/50">
+                      {task.priority}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -262,12 +241,14 @@ export default function Home() {
                   draggable
                   onDrag={(e) => handleDrag(e, task)}
                   key={task.id}
-                  className="flex justify-between gap-2 p-4 bg-amber-100/50 text-black rounded mb-2 cursor-pointer"
+                  className="flex flex-col text-lg justify-between gap-2 p-4 bg-amber-100/50 text-black rounded mb-2 cursor-pointer"
                 >
                   <p>{task.title}</p>
-                  <div className="flex gap-2">
-                    <button>edit</button>
-                    <button>delete</button>
+                  <p className="text-xs">{task.assignee}</p>
+                  <div>
+                    <span className="text-sm px-4 py-1 text-center rounded-full bg-amber-200/50">
+                      {task.priority}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -296,12 +277,14 @@ export default function Home() {
                   draggable
                   onDrag={(e) => handleDrag(e, task)}
                   key={task.id}
-                  className="flex justify-between gap-2 p-4 bg-amber-100/50 text-black rounded mb-2 cursor-pointer"
+                  className="flex flex-col text-lg justify-between gap-2 p-4 bg-amber-100/50 text-black rounded mb-2 cursor-pointer"
                 >
                   <p>{task.title}</p>
-                  <div className="flex gap-2">
-                    <button>edit</button>
-                    <button>delete</button>
+                  <p className="text-xs">{task.assignee}</p>
+                  <div>
+                    <span className="text-sm px-4 py-1 text-center rounded-full bg-amber-200/50">
+                      {task.priority}
+                    </span>
                   </div>
                 </div>
               ))}
