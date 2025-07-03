@@ -15,6 +15,8 @@ export default function Home() {
   const IN_PROGRESS = "IN_PROGRESS";
   const DONE = "DONE";
   const [searchTerm, setSearchTerm] = useState("");
+  const [dueDateFilter, setDueDateFilter] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState<string[]>([]);
   const [tasks, setTasks] = useState<Todo[]>([
     {
       id: 1,
@@ -100,6 +102,15 @@ export default function Home() {
 
   const [dragTask, setDragTask] = useState<Todo | null>(null);
 
+  const togglePriorityFilter = (priority: string) => {
+    setPriorityFilter(
+      (prev) =>
+        prev.includes(priority)
+          ? prev.filter((p) => p !== priority) // remove if already selected
+          : [...prev, priority] // add if not selected
+    );
+  };
+
   const handleDragNDrop = (status: string) => {
     let copyTask = [...tasks];
     copyTask = copyTask.map((item) => {
@@ -145,12 +156,52 @@ export default function Home() {
               />
             </div>
           </div>
-          <button className="px-4 w-[5rem] h-[1.6rem] text-center py-1 z-10 flex cursor-pointer rounded-xl border border-amber-200/50 text-xs hover:bg-amber-200/10 transition duration-300">
-            Priority
-          </button>
-          <button className="px-4 w-[5rem] h-[1.6rem] text-center py-1 z-10 flex cursor-pointer rounded-xl border border-amber-200/50 text-xs hover:bg-amber-200/10 transition duration-300">
+          <div className="flex flex-col gap-1">
+            <button className="px-4 w-[5rem] h-[1.6rem] text-center py-1 z-10 flex cursor-pointer rounded-xl border border-amber-200/50 text-xs hover:bg-amber-200/10 transition duration-300">
+              priority
+            </button>
+
+            {
+              <>
+                <div className="flex gap-2 items-center justify-center z-30">
+                  <input
+                    type="checkbox"
+                    onClick={() => togglePriorityFilter("low")}
+                    // placeholder="Search tasks..."
+                    className="px-4 py-1 flex rounded-xl border border-amber-200/50 text-xs bg-transparent focus:outline-none focus:border-amber-200 transition duration-300"
+                  />
+                  <p>low</p>
+                </div>
+                <div className="flex gap-2 items-center justify-center z-30">
+                  <input
+                    type="checkbox"
+                    onClick={() => togglePriorityFilter("medium")}
+                    // placeholder="Search tasks..."
+                    className="px-4 py-1 flex rounded-xl border border-amber-200/50 text-xs bg-transparent focus:outline-none focus:border-amber-200 transition duration-300"
+                  />
+                  <p>medium</p>
+                </div>
+                <div className="flex gap-2 items-center justify-center z-30">
+                  <input
+                    type="checkbox"
+                    onClick={() => togglePriorityFilter("high")}
+                    // placeholder="Search tasks..."
+                    className="px-4 py-1 flex rounded-xl border border-amber-200/50 text-xs bg-transparent focus:outline-none focus:border-amber-200 transition duration-300"
+                  />
+                  <p>high</p>
+                </div>
+              </>
+            }
+          </div>
+          <input
+            type="date"
+            value={dueDateFilter}
+            onChange={(e) => setDueDateFilter(e.target.value)}
+            className="px-2 py-1 h-[1.6rem] rounded-xl border border-amber-200/50 text-xs bg-transparent text-white focus:outline-none focus:border-amber-200 transition duration-300"
+          />
+          {/* <button className="px-4 w-[5rem] h-[1.6rem] text-center py-1 z-10 flex cursor-pointer rounded-xl border border-amber-200/50 text-xs hover:bg-amber-200/10 transition duration-300">
             date
-          </button>
+          </button> */}
         </div>
         <div className="flex gap-4 justify-between text-center">
           <div
@@ -166,7 +217,11 @@ export default function Home() {
               .filter(
                 (task) =>
                   task.status === TODO &&
-                  task.title.toLowerCase().includes(searchTerm.toLowerCase())
+                  task.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                  (priorityFilter.length === 0 ||
+                    priorityFilter.includes(task.priority)) &&
+                  (dueDateFilter === "" ||
+                    new Date(task.dueDate) <= new Date(dueDateFilter))
               )
               .map((task) => (
                 <div
@@ -196,7 +251,11 @@ export default function Home() {
               .filter(
                 (task) =>
                   task.status === IN_PROGRESS &&
-                  task.title.toLowerCase().includes(searchTerm.toLowerCase())
+                  task.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                  (priorityFilter.length === 0 ||
+                    priorityFilter.includes(task.priority)) &&
+                  (dueDateFilter === "" ||
+                    new Date(task.dueDate) <= new Date(dueDateFilter))
               )
               .map((task) => (
                 <div
@@ -226,7 +285,11 @@ export default function Home() {
               .filter(
                 (task) =>
                   task.status === DONE &&
-                  task.title.toLowerCase().includes(searchTerm.toLowerCase())
+                  task.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                  (priorityFilter.length === 0 ||
+                    priorityFilter.includes(task.priority)) &&
+                  (dueDateFilter === "" ||
+                    new Date(task.dueDate) <= new Date(dueDateFilter))
               )
               .map((task) => (
                 <div
