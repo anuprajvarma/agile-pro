@@ -1,5 +1,7 @@
 "use client";
+import { Dialog, DialogPanel } from "@headlessui/react";
 import React, { useState } from "react";
+import { FiPlus } from "react-icons/fi";
 
 interface Todo {
   title: string;
@@ -16,6 +18,15 @@ export default function Home() {
   const DONE = "DONE";
   const [searchTerm, setSearchTerm] = useState("");
   const [dueDateFilter, setDueDateFilter] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    status: "TODO",
+    id: Math.floor(Math.random() * 1000), // Random ID for demo purposes
+    assignee: "",
+    priority: "medium",
+    dueDate: "",
+  });
   const [priorityFilter, setPriorityFilter] = useState<string[]>([]);
   const [tasks, setTasks] = useState<Todo[]>([
     {
@@ -114,6 +125,29 @@ export default function Home() {
       handleDragNDrop(DONE);
     }
   };
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    console.log("name", name, "value", value);
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Form data submitted:", formData);
+    // Add the new task to the tasks array
+    setTasks((prev) => [
+      ...prev,
+      {
+        ...formData,
+        id: Math.floor(Math.random() * 1000), // Generate a new random ID
+      },
+    ]);
+    setIsOpen(false);
+  };
   return (
     <div className="w-full h-full flex justify-center p-6 bg-[#191919]">
       <div className="w-full flex flex-col gap-4 items-center z-10">
@@ -182,7 +216,7 @@ export default function Home() {
         </div>
         <div className="flex gap-4 justify-between">
           <div
-            className="w-[20rem]"
+            className="w-[20rem] flex flex-col gap-2"
             data-status={TODO}
             onDrop={handleOnDrop}
             onDragOver={(e) => e.preventDefault()}
@@ -190,6 +224,94 @@ export default function Home() {
             <h2 className="p-4 bg-amber-200/50 text-white rounded mb-2">
               Todo
             </h2>
+            <button
+              onClick={() => setIsOpen(true)}
+              className="border hover:bg-amber-200/10 transition duration-300 flex gap-2 items-center justify-center cursor-pointer w-full border-amber-200/50 p-2 rounded"
+            >
+              <p>Add Task</p>
+              <FiPlus />
+            </button>
+            <>
+              {/* <button onClick={() => setIsOpen(true)}>Open dialog</button> */}
+              <Dialog
+                open={isOpen}
+                onClose={() => setIsOpen(false)}
+                className="relative z-50"
+              >
+                <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
+                  <DialogPanel className="max-w-lg space-y-4 p-12 border border-amber-200/50 bg-[#191919] rounded">
+                    <form
+                      onSubmit={handleSubmit}
+                      className="flex flex-col gap-4"
+                    >
+                      <div className="flex gap-2">
+                        <label htmlFor="name">Title:</label>
+                        <input
+                          className="border px-2 border-amber-200/50 bg-transparent text-white rounded outline-none focus:border-amber-200 transition duration-300"
+                          type="text"
+                          id="title"
+                          name="title"
+                          value={formData.title}
+                          onChange={handleChange}
+                        />
+                      </div>
+
+                      <div className="flex gap-2">
+                        <label htmlFor="email">Assign:</label>
+                        <input
+                          className="border px-2 border-amber-200/50 bg-transparent text-white rounded outline-none focus:border-amber-200 transition duration-300"
+                          type="text"
+                          id="assignee"
+                          name="assignee"
+                          value={formData.assignee}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <label htmlFor="email">Status:</label>
+                        <select
+                          id="status"
+                          name="status"
+                          value={formData.status}
+                          onChange={handleChange}
+                          className="border px-2 border-amber-200/50 bg-transparent rounded"
+                        >
+                          <option value={TODO}>Todo</option>
+                          <option value={IN_PROGRESS}>In Progress</option>
+                          <option value={DONE}>Done</option>
+                        </select>
+                      </div>
+                      <div className="flex gap-2">
+                        <label htmlFor="email">Priority:</label>
+                        <select
+                          id="priority"
+                          name="priority"
+                          value={formData.priority}
+                          onChange={handleChange}
+                          className="border px-2 border-amber-200/50 bg-transparent rounded"
+                        >
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                        </select>
+                      </div>
+                      <div className="flex gap-2">
+                        <label htmlFor="email">dueDate:</label>
+                        <input
+                          type="date"
+                          name="dueDate"
+                          value={formData.dueDate}
+                          onChange={handleChange}
+                          className="px-2 py-1 h-[1.6rem] rounded-xl border border-amber-200/50 text-xs bg-transparent text-white focus:outline-none focus:border-amber-200 transition duration-300"
+                        />
+                      </div>
+
+                      <button type="submit">Submit</button>
+                    </form>
+                  </DialogPanel>
+                </div>
+              </Dialog>
+            </>
             {tasks
               .filter(
                 (task) =>
