@@ -157,6 +157,8 @@ export default function Home() {
           id: Math.floor(Math.random() * 1000), // Generate a new random ID
         },
       ]);
+    } else if (formData.title === "" || formData.assignee === "") {
+      alert("Please fill in all fields before submitting.");
     }
     setIsOpen(false);
   };
